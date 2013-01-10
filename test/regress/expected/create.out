@@ -1,0 +1,9 @@
+CREATE TABLE test_cc (
+    id serial,
+    dt date
+);
+NOTICE:  CREATE TABLE will create implicit sequence "test_cc_id_seq" for serial column "test_cc.id"
+CREATE FUNCTION partition_insert_trigger() RETURNS trigger
+    LANGUAGE c STRICT
+    AS 'partition_insert_trigger', 'partition_insert_trigger'
+	SET DateStyle TO 'ISO,MDY';

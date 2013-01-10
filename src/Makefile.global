@@ -1,0 +1,9 @@
+CC=gcc
+CC_FLAGS=-fpic -I `pg_config --includedir-server`
+LD=gcc
+LD_FLAGS=-shared
+INSTALL=cp
+INSTALL_DIR=`pg_config --pkglibdir`
+
+.PHONY: all install clean build-clean
+

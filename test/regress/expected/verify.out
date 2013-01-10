@@ -1,0 +1,94 @@
+-- Each one of the queries of this file should return only one row, with the total number of row in test_cc or one of its partitions
+SELECT COUNT(*) FROM test_cc
+UNION
+(SELECT SUM(count) FROM (
+(SELECT COUNT(*) AS count FROM test_cc_2012_01 UNION SELECT COUNT(*) FROM test_cc_2012_01 WHERE to_char(dt, 'YYYY_MM') = '2012_01')
+UNION ALL (SELECT COUNT(*) FROM test_cc_2012_02 UNION SELECT COUNT(*) FROM test_cc_2012_02 WHERE to_char(dt, 'YYYY_MM') = '2012_02')
+UNION ALL (SELECT COUNT(*) FROM test_cc_2012_03 UNION SELECT COUNT(*) FROM test_cc_2012_03 WHERE to_char(dt, 'YYYY_MM') = '2012_03')
+UNION ALL (SELECT COUNT(*) FROM test_cc_2012_04 UNION SELECT COUNT(*) FROM test_cc_2012_04 WHERE to_char(dt, 'YYYY_MM') = '2012_04')
+UNION ALL (SELECT COUNT(*) FROM test_cc_2012_05 UNION SELECT COUNT(*) FROM test_cc_2012_05 WHERE to_char(dt, 'YYYY_MM') = '2012_05')
+UNION ALL (SELECT COUNT(*) FROM test_cc_2012_06 UNION SELECT COUNT(*) FROM test_cc_2012_06 WHERE to_char(dt, 'YYYY_MM') = '2012_06')
+UNION ALL (SELECT COUNT(*) FROM test_cc_2012_07 UNION SELECT COUNT(*) FROM test_cc_2012_07 WHERE to_char(dt, 'YYYY_MM') = '2012_07')
+UNION ALL (SELECT COUNT(*) FROM test_cc_2012_08 UNION SELECT COUNT(*) FROM test_cc_2012_08 WHERE to_char(dt, 'YYYY_MM') = '2012_08')
+UNION ALL (SELECT COUNT(*) FROM test_cc_2012_09 UNION SELECT COUNT(*) FROM test_cc_2012_09 WHERE to_char(dt, 'YYYY_MM') = '2012_09')
+UNION ALL (SELECT COUNT(*) FROM test_cc_2012_10 UNION SELECT COUNT(*) FROM test_cc_2012_10 WHERE to_char(dt, 'YYYY_MM') = '2012_10')
+UNION ALL (SELECT COUNT(*) FROM test_cc_2012_11 UNION SELECT COUNT(*) FROM test_cc_2012_11 WHERE to_char(dt, 'YYYY_MM') = '2012_11')
+UNION ALL (SELECT COUNT(*) FROM test_cc_2012_12 UNION SELECT COUNT(*) FROM test_cc_2012_12 WHERE to_char(dt, 'YYYY_MM') = '2012_12')
+) AS childs);
+ count 
+-------
+   276
+(1 row)
+
+SELECT COUNT(*) FROM test_cc_2012_01 UNION SELECT COUNT(*) FROM test_cc_2012_01 WHERE to_char(dt, 'YYYY_MM') = '2012_01';
+ count 
+-------
+    23
+(1 row)
+
+SELECT COUNT(*) FROM test_cc_2012_02 UNION SELECT COUNT(*) FROM test_cc_2012_02 WHERE to_char(dt, 'YYYY_MM') = '2012_02';
+ count 
+-------
+    23
+(1 row)
+
+SELECT COUNT(*) FROM test_cc_2012_03 UNION SELECT COUNT(*) FROM test_cc_2012_03 WHERE to_char(dt, 'YYYY_MM') = '2012_03';
+ count 
+-------
+    23
+(1 row)
+
+SELECT COUNT(*) FROM test_cc_2012_04 UNION SELECT COUNT(*) FROM test_cc_2012_04 WHERE to_char(dt, 'YYYY_MM') = '2012_04';
+ count 
+-------
+    23
+(1 row)
+
+SELECT COUNT(*) FROM test_cc_2012_05 UNION SELECT COUNT(*) FROM test_cc_2012_05 WHERE to_char(dt, 'YYYY_MM') = '2012_05';
+ count 
+-------
+    23
+(1 row)
+
+SELECT COUNT(*) FROM test_cc_2012_06 UNION SELECT COUNT(*) FROM test_cc_2012_06 WHERE to_char(dt, 'YYYY_MM') = '2012_06';
+ count 
+-------
+    23
+(1 row)
+
+SELECT COUNT(*) FROM test_cc_2012_07 UNION SELECT COUNT(*) FROM test_cc_2012_07 WHERE to_char(dt, 'YYYY_MM') = '2012_07';
+ count 
+-------
+    23
+(1 row)
+
+SELECT COUNT(*) FROM test_cc_2012_08 UNION SELECT COUNT(*) FROM test_cc_2012_08 WHERE to_char(dt, 'YYYY_MM') = '2012_08';
+ count 
+-------
+    23
+(1 row)
+
+SELECT COUNT(*) FROM test_cc_2012_09 UNION SELECT COUNT(*) FROM test_cc_2012_09 WHERE to_char(dt, 'YYYY_MM') = '2012_09';
+ count 
+-------
+    23
+(1 row)
+
+SELECT COUNT(*) FROM test_cc_2012_10 UNION SELECT COUNT(*) FROM test_cc_2012_10 WHERE to_char(dt, 'YYYY_MM') = '2012_10';
+ count 
+-------
+    23
+(1 row)
+
+SELECT COUNT(*) FROM test_cc_2012_11 UNION SELECT COUNT(*) FROM test_cc_2012_11 WHERE to_char(dt, 'YYYY_MM') = '2012_11';
+ count 
+-------
+    23
+(1 row)
+
+SELECT COUNT(*) FROM test_cc_2012_12 UNION SELECT COUNT(*) FROM test_cc_2012_12 WHERE to_char(dt, 'YYYY_MM') = '2012_12';
+ count 
+-------
+    23
+(1 row)
+

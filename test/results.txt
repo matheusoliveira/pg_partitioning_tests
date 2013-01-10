@@ -1,0 +1,39 @@
+Inserting 1G rows without partition:
+1. 17598.972 ms
+2. 17825.408 ms
+3. 17565.752 ms
+AVG: 17663.377 ms
+
+Inserting 1G rows with PL/pgSQL and EXECUTE:
+1. 67976.950 ms
+2. 66318.850 ms
+3. 66408.326 ms
+AVG: 66901.375 ms
+
+Inserting 1G rows with C and SPI_execute_with_args:
+1. 58101.606 ms
+2. 58643.213 ms
+3. 58958.306 ms
+AVG: 58567.708 ms
+SPEEDUP compared with PL/pgSQL: 1.142
+
+Inserting 1G rows with C and heap_insert:
+1. 34101.322 ms
+2. 33697.441 ms
+3. 34074.542 ms
+AVG: 33957.768 ms
+SPEEDUP compared with PL/pgSQL: 1.970
+SPEEDUP compared with C and SPI_execute_with_args: 1.724
+
+Inserting 1G rows with C and SPI_prepare and SPI_execute_plan:
+1. 59044.873 ms
+2. 59631.398 ms
+3. 58912.632 ms
+AVG: 59196.301 ms
+
+Inserting 1G rows with RULES:
+1. 318436.443 ms
+2. 317958.963 ms
+3. 318945.074 ms
+AVG: 318446.826 ms
+

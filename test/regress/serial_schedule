@@ -1,0 +1,7 @@
+# One test depends from other, so the orders here matters, and a parallel schedule is not possible
+test: create
+test: insert_data_1
+test: partitions
+test: indexes
+test: triggers
+test: verify

@@ -1,0 +1,31 @@
+Inserting 1G rows without partition:
+	transaction type: Custom query
+	scaling factor: 1
+	query mode: simple
+	number of clients: 100
+	number of threads: 2
+	number of transactions per client: 10000
+	number of transactions actually processed: 1000000/1000000
+	tps = 3112.327042 (including connections establishing)
+	tps = 3116.673981 (excluding connections establishing)
+	---
+	real	5m21.360s
+	user	0m8.237s
+	sys	0m13.941s
+
+
+Inserting 1G rows with C and heap_insert:
+	transaction type: Custom query
+	scaling factor: 1
+	query mode: simple
+	number of clients: 100
+	number of threads: 2
+	number of transactions per client: 10000
+	number of transactions actually processed: 1000000/1000000
+	tps = 3067.561813 (including connections establishing)
+	tps = 3071.008829 (excluding connections establishing)
+	---
+	real	5m26.050s
+	user	0m8.881s
+	sys	0m14.501s
+
