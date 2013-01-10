@@ -37,3 +37,10 @@ Inserting 1G rows with RULES:
 3. 318945.074 ms
 AVG: 318446.826 ms
 
+Inserting 1G rows with C and SPI_(prepare/keepplan/execute_plan):
+1. 43517.003 ms
+2. 43688.916 ms
+3. 44141.209 ms
+AVG: 43782.376 ms
+SPEEDUP compared with PL/pgSQL: 1.528
+

@@ -33,13 +33,11 @@ located on the subdirectories of `test/`. All the test runs are in
 
   Tests at `test/pgsql/`
 
-- Inserting 1G rows with C and `SPI_prepare` and `SPI_execute_plan`: 59196.301 ms
-
-- Inserting 1G rows with C and `SPI_execute_with_args` (with `insert_partition_trigger_spi`): 58567.708 ms
+- Inserting 1G rows with C and `SPI_(prepare/keepplan/execute_plan)`: 43782.376 ms
 
   Tests at `test/spi/`
 
-  SPEEDUP compared with PL/pgSQL: 1.142
+  SPEEDUP compared with PL/pgSQL: 1.528
 
 - Inserting 1G rows with C and `heap_insert` (with `insert_partition_trigger`): 33957.768 ms
 

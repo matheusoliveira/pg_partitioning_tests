@@ -17,6 +17,36 @@
 PG_MODULE_MAGIC;
 #endif
 
+typedef struct PreparedPlan {
+	char key[NAMEDATALEN];
+	SPIPlanPtr plan;
+	struct PreparedPlan *next;
+} PreparedPlan;
+
+static PreparedPlan * FindPlan(const char *key, PreparedPlan **list) {
+	PreparedPlan *item = *list;
+	PreparedPlan *last = *list;
+	if (*list == NULL) {
+		*list = (PreparedPlan *) malloc(sizeof(PreparedPlan));
+		strcpy((*list)->key, key);
+		(*list)->plan = NULL;
+		(*list)->next = NULL;
+		return *list;
+	}
+	while (item != NULL) {
+		if (strcmp(item->key, key) == 0) {
+			return item;
+		}
+		last = item;
+		item = item->next;
+	}
+	last->next = item = (PreparedPlan *) malloc(sizeof(PreparedPlan));
+	strcpy(item->key, key);
+	item->plan = NULL;
+	item->next = NULL;
+	return item;
+}
+
 extern Datum partition_insert_trigger_spi(PG_FUNCTION_ARGS);
 
 PG_FUNCTION_INFO_V1(partition_insert_trigger_spi);
@@ -31,6 +61,9 @@ PG_FUNCTION_INFO_V1(partition_insert_trigger_spi);
  * ----------------------------------------------------------------
  */
 Datum partition_insert_trigger_spi(PG_FUNCTION_ARGS) {
+	static PreparedPlan *plans = NULL;
+	PreparedPlan *cur_plan;
+	SPIPlanPtr tmp_plan;
 	TriggerData *trigdata = (TriggerData *) fcinfo->context;
 	TupleDesc tupdesc;
 	HeapTuple rettuple;
@@ -42,6 +75,7 @@ Datum partition_insert_trigger_spi(PG_FUNCTION_ARGS) {
 	int month, year;
 	/* we should use dynamic allocated, but hey, this is just a test */
 	char insert_command[2056];
+	char child_table_name[NAMEDATALEN];
 	char *relname;
 
 	/* make sure it's called as a trigger at all */
@@ -72,9 +106,11 @@ Datum partition_insert_trigger_spi(PG_FUNCTION_ARGS) {
 	/* generate the beginning of the SQL command to insert into the evaluated table.
 	 * We don't care if the child table exists or not here */
 	if (month >= 1 && month <= 12
-		&& snprintf(insert_command, sizeof(insert_command), "INSERT INTO %s_%04d_%02d VALUES(", relname, year, month) < 0
+		&& snprintf(child_table_name, sizeof(child_table_name), "%s_%04d_%02d", relname, year, month) < 0
 	)
 		elog(ERROR, "partition_insert: %d-%d invalid year-month", year, month);
+	
+	cur_plan = FindPlan(child_table_name, &plans);
 
 	/* declare and allocate the fields arrays */
 	Datum *values = SPI_palloc(sizeof(Datum) * tupdesc->natts);
@@ -82,24 +118,30 @@ Datum partition_insert_trigger_spi(PG_FUNCTION_ARGS) {
 	char *nulls = SPI_palloc(sizeof(bool) * tupdesc->natts);
 	char tmp[21];
 	/* concatenate the fields into the INSERT command and push on the arrays */
+	if (!cur_plan->plan) {
+		snprintf(insert_command, sizeof(insert_command), "INSERT INTO %s VALUES(", child_table_name);
+	}
 	for (i = 0; i < tupdesc->natts; i++) {
 		values[i] = SPI_getbinval(rettuple, tupdesc, i+1, &isnull);
 		nulls[i] = isnull ? 'n': ' ';
 		types[i] = SPI_gettypeid(tupdesc, i+1);
-		sprintf(tmp, "$%d", i+1);
-		if (i)
-			strcat(insert_command, ", ");
-		strcat(insert_command, tmp);
+		if (!cur_plan->plan) {
+			sprintf(tmp, "$%d", i+1);
+			if (i)
+				strcat(insert_command, ", ");
+			strcat(insert_command, tmp);
+		}
 	}
-	strcat(insert_command, ")");
+	if (!cur_plan->plan) {
+		strcat(insert_command, ")");
+		cur_plan->plan = SPI_prepare(insert_command, tupdesc->natts, types);
+		if (cur_plan->plan == NULL)
+			elog(ERROR, "partition_insert: SPI_prepare returned %d", SPI_result);
 
-	/* let's execute it */
-#ifdef PREPARE_PLAN
-	SPIPlanPtr plan = SPI_prepare(insert_command, tupdesc->natts, types);
-	ret = SPI_execute_plan(plan, values, nulls, false, 1);
-#else
-	ret = SPI_execute_with_args(insert_command, tupdesc->natts, types, values, nulls, false, 1);
-#endif
+		if (SPI_keepplan(cur_plan->plan))
+			elog(ERROR, "partition_insert: SPI_keepplan failed");
+	}
+	ret = SPI_execute_plan(cur_plan->plan, values, nulls, false, 1);
 
     if (ret < 0)
         elog(ERROR, "partition_insert: SPI_execute returned %d", ret);
