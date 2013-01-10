@@ -58,3 +58,9 @@ on a not partitioned table took 5 minutes and 21 seconds, while inserting
 on a partitioned (12 partitions) took 5 minutes and 26 seconds, using the
 `insert_partition_trigger`.
 
+Authors
+=======
+
+Developed by Matheus de Oliveira `matheus.oliveira (at) dextra (dot) com (dot) br`.
+And it is supported by [Dextra Sistemas](http://www.dextra.com.br/).
+
