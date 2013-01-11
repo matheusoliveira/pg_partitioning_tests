@@ -18,12 +18,12 @@ AVG: 58567.708 ms
 SPEEDUP compared with PL/pgSQL: 1.142
 
 Inserting 1G rows with C and heap_insert:
-1. 34101.322 ms
-2. 33697.441 ms
-3. 34074.542 ms
-AVG: 33957.768 ms
-SPEEDUP compared with PL/pgSQL: 1.970
-SPEEDUP compared with C and SPI_execute_with_args: 1.724
+1. 31993.154 ms
+2. 31852.040 ms
+3. 31843.101 ms
+AVG: 31896.098 ms
+SPEEDUP compared with PL/pgSQL: 2.097
+SPEEDUP compared with C and SPI_(prepare/keepplan/execute_plan): 1.146
 
 Inserting 1G rows with C and SPI_prepare and SPI_execute_plan:
 1. 59044.873 ms
@@ -38,9 +38,9 @@ Inserting 1G rows with RULES:
 AVG: 318446.826 ms
 
 Inserting 1G rows with C and SPI_(prepare/keepplan/execute_plan):
-1. 43517.003 ms
-2. 43688.916 ms
-3. 44141.209 ms
-AVG: 43782.376 ms
-SPEEDUP compared with PL/pgSQL: 1.528
+1. 36579.151 ms
+2. 36637.381 ms
+3. 36459.162 ms
+AVG: 36558.564
+SPEEDUP compared with PL/pgSQL: 1.829
 

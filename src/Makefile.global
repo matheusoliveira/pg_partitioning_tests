@@ -1,5 +1,5 @@
 CC=gcc
-CC_FLAGS=-fpic -I `pg_config --includedir-server`
+CC_FLAGS=-fpic -O2 -I `pg_config --includedir-server`
 LD=gcc
 LD_FLAGS=-shared
 INSTALL=cp

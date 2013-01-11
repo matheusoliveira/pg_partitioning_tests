@@ -19,6 +19,9 @@
 #include <executor/executor.h>
 #include <executor/spi.h>
 #include <utils/rel.h>
+#include <utils/date.h>
+#include <utils/datetime.h>
+#include <utils/timestamp.h>
 
 #ifdef PG_MODULE_MAGIC
 PG_MODULE_MAGIC;
@@ -239,10 +242,11 @@ Datum partition_insert_trigger(PG_FUNCTION_ARGS) {
 	int ret;
 	int attrnum;
 	char **args;
-	char *dt;
-	int month, year;
+	DateADT dt;
+	int mday, month, year;
 	char *relname;
 	char child_table_name[NAMEDATALEN];
+	bool isnull;
 
 	/* make sure it's called as a before insert trigger */
 	if (!CALLED_AS_TRIGGER(fcinfo))
@@ -264,9 +268,13 @@ Datum partition_insert_trigger(PG_FUNCTION_ARGS) {
 	if (attrnum <= 0)
 		elog(ERROR, "insert_partition: column \"%s\" not found", args[0]);
 
-	/* get the date value as a string and retrieve year and month integers */
-	dt = SPI_getvalue(rettuple, tupdesc, attrnum);
-	sscanf(dt, "%d-%d-%*d", &year, &month);
+	/* get the date value and retrieve year, month and day as integers */
+	dt = DatumGetDateADT(SPI_getbinval(rettuple, tupdesc, attrnum, &isnull));
+	if (DATE_NOT_FINITE(dt))
+		elog(ERROR, "insert_partition: date must be finite");
+	if (isnull)
+		elog(ERROR, "insert_partition: date cannot be NULL");
+	j2date(dt + POSTGRES_EPOCH_JDATE, &year, &month, &mday);
 
 	/* get the table name, based on the date field */
 	if (month >= 1 && month <= 12

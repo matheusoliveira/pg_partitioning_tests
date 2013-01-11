@@ -12,6 +12,7 @@
 #include <executor/executor.h>
 #include <executor/spi.h>
 #include <utils/rel.h>
+#include <utils/date.h>
 
 #ifdef PG_MODULE_MAGIC
 PG_MODULE_MAGIC;
@@ -71,8 +72,8 @@ Datum partition_insert_trigger_spi(PG_FUNCTION_ARGS) {
 	int ret, i;
 	int attrnum;
 	char **args;
-	char *dt;
-	int month, year;
+	DateADT dt;
+	int mday, month, year;
 	/* we should use dynamic allocated, but hey, this is just a test */
 	char insert_command[2056];
 	char child_table_name[NAMEDATALEN];
@@ -99,9 +100,13 @@ Datum partition_insert_trigger_spi(PG_FUNCTION_ARGS) {
 	if (attrnum <= 0)
 		elog(ERROR, "partition_insert: column \"%s\" not found", args[0]);
 
-	/* get the date value as a string and retrieve year and month integers */
-	dt = SPI_getvalue(rettuple, tupdesc, attrnum);
-	sscanf(dt, "%d-%d-%*d", &year, &month);
+	/* get the date value and retrieve year, month and day as integers */
+	dt = DatumGetDateADT(SPI_getbinval(rettuple, tupdesc, attrnum, &isnull));
+	if (DATE_NOT_FINITE(dt))
+		elog(ERROR, "insert_partition: date must be finite");
+	if (isnull)
+		elog(ERROR, "insert_partition: date cannot be NULL");
+	j2date(dt + POSTGRES_EPOCH_JDATE, &year, &month, &mday);
 
 	/* generate the beginning of the SQL command to insert into the evaluated table.
 	 * We don't care if the child table exists or not here */
